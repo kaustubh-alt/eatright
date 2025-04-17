@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% for j in primary %}
+    <meta name="keywords" content="{% for word in j %}{{ word }}','{% endfor  %}">
+    {% endfor %}
+    <title>{{ meta_title }}</title>
+    <meta name=" description" content="{{ meta_description }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&amp;display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        /* Flexbox for the entire sidebar */
+        .sidebar {
+            flex-direction: column;
+            justify-content: space-between;
+            /* Makes the bottom content stay at the bottom */
+            background-image: linear-gradient(#d39400, #885f00);
+            padding: 2%;
+            height: 100vh;
+            overflow-y: hidden;
+            max-width: 75%;
+            width: 375px;
+            position: fixed;
+            z-index: 2;
+
+        }
+
+        .main-content {
+            position: absolute;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            padding: 0%;
+
+
+
+
+            & button {
+                width: 100%;
+                text-align: left;
+                margin: 10px 0px 0px 10px;
+                padding: 10px;
+                padding-inline-start: 20px;
+                border-radius: 25rem;
+                background-color: #d4c200;
+                margin-top: 20px;
+                text-decoration: none;
+                font-weight: 500;
+                color: white;
+
+
+                &.logout {
+
+                    &:hover {
+                        background-color: rgb(84, 48, 0);
+                        color: rgb(255, 0, 0);
+                        box-shadow: rgb(255, 0, 0) -10px 10px 0px 0px;
+                        padding-inline-start: 0px 0px 20px 10px;
+
+                    }
+                }
+
+                &:hover {
+                    background-color: rgb(249, 242, 181);
+                    color: rgb(94, 75, 0);
+                    box-shadow: rgb(94, 75, 0) -10px 10px 0px 0px;
+                    padding-inline-start: 0px 0px 20px 10px;
+
+                }
+            }
+        }
+
+        body {
+            height: 100vh;
+            background-image: linear-gradient(180deg, #f0e000, #d7a500);
+            font-size: 1rem;
+            font-family: 'Poppins';
+            font-weight: 600;
+
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            /* Modern way to handle aspect ratio */
+            object-fit: cover;
+            /* Ensures the image covers the entire area */
+        }
+
+        .like-dislike-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .like-dislike-container input[type="radio"] {
+            display: none;
+            /* Hide the original radio buttons */
+        }
+
+        .like-dislike-container label {
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        .hidden {
+            display: none;
+            visibility: hidden;
+        }
+
+        main {
+            padding: 0% 10% 0% 10%;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 0;
+            }
+        }
+
+        /* Add these styles to your existing CSS */
+        .formatted-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .formatted-text strong {
+            font-weight: 600;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- Sidebar with Top and Bottom Elements -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="sidebar" style="display: none;" id="sd">
+                <!-- Top Section of the Sidebar -->
+
+                <div>
+                    <span class="d-flex justify-content-end">
+                        <button class="btn btn-warning" onclick="sidebarcl()"><i
+                                class="fa fa-chevron-left"></i></button>
+
+                    </span>
+                    <h3 class="sidebar-header p-2 text-light text-center fs-2" ;">BeRight EatRight</h3>
+                    <ul class="sidebar-list">
+                        <li><button class="btn" onclick="window.location.replace('/');">Home</button></li>
+                        <li><button class="btn" onclick="window.location.replace('activity/likes');">Recently
+                                Liked</button>
+                        </li>
+                        <li><button class="btn"
+                                onclick="window.location.replace('activity/favorites');">Favorites</button></li>
+                        <li><button class="btn" onclick="window.location.replace('activity/coupons');">Coupons</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Bottom Section of the Sidebar -->
+                <div>
+                    <ul class="sidebar-list">
+                        <li><button class="btn" onclick="window.location.replace('/landingpage');">About</button></li>
+                        <li><button class="btn  logout"
+                                onclick="window.location.replace('/logout-user');">Logout</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="main-content" id="mc">
+                <div class="d-flex top-con mt-4 justify-content-between">
+                    <span>
+                        <button onclick="sidebarcl()" id="openbtn" class="btn btn-warning"><i
+                                class="fa fa-chevron-right"></i></button>
+                    </span>
+                    <span>
+                        <button onclick="" id="" class="btn btn-success rounded-pill"><i
+                                class="fa fa-user"></i></button>
+                    </span>
+                </div>
+                <main class="w-100 mt-3">
+
+                    <div class="">
+                        <div class="">
+                            <form method="get" action="#" id="searchback">
+                                <input type="text" name="key" id="searchmeal"
+                                    style="background-color: rgb(255, 255, 203);font-size: 1.3rem;"
+                                    class="prompt-box form-control w-100 rounded-pill border border-success ps-4 text-warning"
+                                    value="{% if key %}{{ key }}{% endif %}" placeholder="Whats in your mind">
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row text-center py-4 hidden" id="loader">
+
+                        <img src="{% static 'loading-buffering.gif' %} " alt="Funny GIF" width="300" height="200"
+                            style="object-fit: contain;">
+
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-3 g-4 mt-3" style="overflow-y: auto;height: 70vh;" id="data">
+
+                        {% if data %}
+
+
+                        {% for i,j in data.items %}
+                        <div class="col mb-3">
+                            <div class="card bg-warning-subtle text-warning">
+                                <img src="{% if j.dish_image %} {{ j.dish_image }}{% else %}{% static 'no-image.png'%}{% endif %}"
+                                    class="card-img-top" alt="Dish" width="120rem">
+                                <div class="card-body">
+                                    <h5 class="card-title" style="font-size: inherit;">{{ j.dish_name }}</h5>
+                                    <p class="formatted-text card-text text-warning-emphasis">
+                                        {{ j.dish_description|safe }}
+                                    </p>
+
+
+                                </div>
+                            </div>
+
+                            <div class="con-btn">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span class="post d-flex align-items-center" data-post-id="3">
+                                        <div
+                                            class="like-dislike-container p-2 rounded-pill ms-2 px-3 bg-warning-subtle">
+                                            <i class=" text-warning-emphasis icon-btn fa fa-thumbs-o-up"
+                                                dishname="{{ j.dish_name }}" status="unchecked" data-action="like"
+                                                data-post-id="{{i}}"></i>
+                                            <i class=" text-warning-emphasis icon-btn fa fa-thumbs-o-down"
+                                                dishname="{{ j.dish_name }}" status="unchecked" data-action="dislike"
+                                                data-post-id="{{i}}"></i>
+                                        </div>
+                                    </span>
+                                    <button class="btn text-danger" onclick='chg(this,"{{j.dish_name}}")' ;><i
+                                            class="fa fa-heart-o"></i></button>
+                                </div>
+
+                            </div>
+
+
+
+
+                        </div>
+
+                        {% endfor %}
+
+                        {% else %}
+                        <h1 class="text-danger text-center">Something went wrong . code : 100</h1>
+                        {% endif %}
+
+                    </div>
+
+                </main>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+
+        function getCSRFToken() {
+            const csrfCookie = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+            return csrfCookie ? csrfCookie.pop() : '';
+        }
+
+
+        function likeDish(dish, action) {
+
+            fetch('/likedish', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                body: JSON.stringify({
+                    "dish_name": dish,
+                    "action": action
+                }),
+
+            })
+                .then((data) => {
+                    if (data.status === 100) {
+                        window.location.href = '/logout-user';
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+
+
+        function sidebarcl() {
+            let sidebar = document.getElementById("sd");
+
+            if (sidebar.style.display == "flex") {
+                sidebar.style.display = "none";
+            } else {
+                sidebar.style.display = "flex"
+            }
+
+
+        }
+
+        function chg(ev, dish) {
+            likeDish(dish, "love")
+            if (ev.innerHTML === '<i class="fa fa-heart-o"></i>') {
+                ev.innerHTML = "<i class='fa fa-heart'></i>"
+            }
+            else {
+                ev.innerHTML = "<i class='fa fa-heart-o'></i>"
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            if (event.target.matches('.icon-btn')) {
+                const postId = event.target.getAttribute('data-post-id');
+                const action = event.target.getAttribute('data-action');
+                const status = event.target.getAttribute('status');
+                const dishname = event.target.getAttribute('dishname');
+                //console.log(dishname+" "+action+" ")
+
+
+
+                likeDish(dishname, action)
+
+                // Select the like and dislike icons for this specific post
+                const likeIcon = document.querySelector(`.icon-btn[data-post-id="${postId}"][data-action="like"]`);
+                const dislikeIcon = document.querySelector(`.icon-btn[data-post-id="${postId}"][data-action="dislike"]`);
+                //console.log(likeIcon,dislikeIcon)
+
+                // Reset both icons to their default state
+                likeIcon.classList.remove("active", "fa-thumbs-up");
+                dislikeIcon.classList.remove("active", "fa-thumbs-down");
+                likeIcon.setAttribute("status", "unchecked");
+                dislikeIcon.setAttribute("status", "unchecked");
+                likeIcon.classList.add("fa-thumbs-o-up");
+                dislikeIcon.classList.add("fa-thumbs-o-down");
+
+                // Toggle the clicked icon's state
+                if (action === 'like') {
+                    if (status == "unchecked") {
+                        likeIcon.classList.add("active", "fa-thumbs-up");
+                        likeIcon.classList.remove("fa-thumbs-o-up");
+                        event.target.setAttribute("status", "checked");
+                    }
+                    else if (status == "checked") {
+                        likeIcon.classList.remove("active", "fa-thumbs-up");
+                        likeIcon.classList.add("fa-thumbs-o-up");
+                        event.target.setAttribute("status", "unchecked");
+
+                    }
+                } else if (action === 'dislike') {
+                    if (status == "unchecked") {
+                        dislikeIcon.classList.add("active", "fa-thumbs-down");
+                        dislikeIcon.classList.remove("fa-thumbs-o-down");
+                        event.target.setAttribute("status", "checked");
+                    }
+                    else if (status == "checked") {
+                        dislikeIcon.classList.remove("active", "fa-thumbs-down");
+                        dislikeIcon.classList.add("fa-thumbs-o-down");
+                        event.target.setAttribute("status", "unchecked");
+
+                    }
+                }
+
+
+
+            }
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchForm = document.getElementById('searchback');
+            const searchInput = document.getElementById('searchmeal');
+
+            searchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent form submission temporarily
+
+                    let loader = document.getElementById("loader");
+                    let data = document.getElementById("data");
+
+                    loader.classList.remove("hidden")
+                    data.classList.add("hidden")
+
+                    // Optionally, you can manually submit the form after your logic
+                    searchForm.submit();
+                }
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>

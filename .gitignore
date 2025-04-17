@@ -1,0 +1,9 @@
+# Ignore Python cache folders and files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+static/
+
+*.jpg
