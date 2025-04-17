@@ -892,6 +892,14 @@
                 } else {
                     // Remove loading indicator and add bot response
                     removeLoadingIndicator();
+                    
+                    // Add error handling
+                    if (data.isError) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    // Normal message handling
                     addMessage(data.message, 'bot', data.IsImage || false);
                 }
             };
@@ -903,6 +911,15 @@
             const message = input.value.trim();
             const hasImage = imagePreview.style.display !== 'none';
             
+            // Add word count check
+            if (message && !hasImage) {
+                const wordCount = message.split(/\s+/).length;
+                if (wordCount > 50) {
+                    alert('Please limit your message to 50 words or less.');
+                    return;
+                }
+            }
+            
             if (message || hasImage) {
                 if (hasImage) {
                     const imageUrl = document.getElementById('preview').src;
@@ -911,7 +928,7 @@
                     cancelPreview();
                 } else {
                     addMessage(message, 'user', false);
-                    addLoadingIndicator(); // Add loading indicator before bot response
+                    addLoadingIndicator();
                     sendData(message, false);
                     input.value = '';
                 }
@@ -1146,3 +1163,4 @@
 </body>
 
 </html>
+``` 

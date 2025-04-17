@@ -84,6 +84,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         packet = json.loads(text_data)
 
+        if not packet['isImage']:
+            word_count = len(packet['message'].split())
+            if word_count > 50:
+                await self.send(text_data=json.dumps({
+                    "message": "Please limit your message to 50 words or less.",
+                    "IsImage": False,
+                    "isError": True
+                }))
+                return
+
         IsImage = False
         message = ""
 
