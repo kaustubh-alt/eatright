@@ -53,4 +53,6 @@ This AI-powered food chatbot which can solve people doubts regarding to food , s
 
 Feel free to clone, fork, or contribute to this project!
 
+
+#The  Main LLM file which generate response is not here for security issues, you can use any other LLM or just API to get response. this repo is just for interface 
 ---
