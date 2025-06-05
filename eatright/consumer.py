@@ -20,12 +20,15 @@ fs = FileSystemStorage(location=image_storage_path)
 class Modulus:
     def __init__(self, user_instance):
         self.user = user_instance
+        self.last_chats = None
 
     @classmethod
     async def create(cls, username):
         # print(username)
         user_instance = await sync_to_async(userdb.objects.get)(user=username)
         return cls(user_instance)
+    
+
 
     async def save_user_chat(self, timestamp, message=None, response=None, genimage=None, userimage=None):
         await sync_to_async(userchat.objects.create)(
@@ -37,6 +40,8 @@ class Modulus:
             time=timestamp,
         )
 
+    
+
     async def get_last_messages(self):
         """Fetch last 10 messages for the current user"""
         messages = await sync_to_async(list)(
@@ -45,14 +50,18 @@ class Modulus:
             .values('user', 'response', 'userimage', 'genimage', 'time')
         )
         # Convert datetime to timestamp for JSON serialization
-        for msg in messages:
-            msg['time'] = msg['time'].timestamp() if msg['time'] else None
-        return messages
+        return [{
+            'user_message': msg['user'],
+            'bot_response': msg['response'],
+            'user_image': f"{image_storage_path}{msg['userimage']}" if msg['userimage'] else None,
+            'generated_image': msg['genimage'],
+            'timestamp': msg['time'].timestamp() if msg['time'] else None
+        } for msg in messages]
+            
 
-
-def process_llama_request(input_data):
+def process_llama_request(input_data,chats):
     llama = mi.lamba()
-    response = llama.llama7b(input_data)
+    response = llama.gemini(input_data,chats)
     return response
 
 
@@ -62,24 +71,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.userobj = await Modulus.create(self.scope['user'])
         await self.accept()
 
-        # Fetch last 10 messages
-        chat_history = await self.userobj.get_last_messages()
-        
-        # Format messages for sending
-        formatted_history = [{
-            'user_message': msg['user'],
-            'bot_response': msg['response'],
-            'user_image': f"{image_storage_path}{msg['userimage']}" if msg['userimage'] else None,
-            'generated_image': msg['genimage'],
-            'timestamp': msg['time']
-        } for msg in chat_history]
+        self.userobj.last_chats = await self.userobj.get_last_messages()
 
+        #print(self.userobj.last_chats)
         # Send welcome message and chat history
         await self.send(text_data=json.dumps({
             "type": "connection_established",
             "message": "Welcome to the chat!",
-            "chat_history": formatted_history
+            "chat_history": self.userobj.last_chats
         }))
+
+        chat_context = ""
+       # print(chat_history[0:10])
+        if self.userobj.last_chats:
+            for msg in list(reversed(self.userobj.last_chats[0:10])):
+                chat_context += f"User: {msg.get('user_message', '')}\n"
+                chat_context += f"Assistant: {msg.get('bot_response', '')}\n"
+
+        # Clean the chat context string
+        chat_context = chat_context.replace('\n', '\\n').replace('\r', '').replace('None', 'null')
+
+        self.userobj.last_chats = chat_context
 
     async def receive(self, text_data):
         packet = json.loads(text_data)
@@ -114,14 +126,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     userimage=file_path
                 )
 
+
+
             except Exception as e:
                 message = f"Error uploading image: {str(e)}"
 
         else:
+          
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(process_llama_request, packet['message'])
+                future = executor.submit(process_llama_request, packet['message'], self.userobj.last_chats)
                 message = future.result()
-                # print(message)
+                #print("msg is ",message)
+
+            await self.userobj.save_user_chat(
+                timestamp=time.time(),
+                message=packet['message'],
+                response=message['response']
+            )
+  
+
+            await self.send(text_data=json.dumps({
+                "message": message['response'],
+                "IsImage": IsImage,
+            }))
 
             if message['recommendation']:
                 await self.userobj.save_user_chat(
@@ -134,18 +161,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "IsImage": True,
             }))
 
-            await self.userobj.save_user_chat(
-                timestamp=time.time(),
-                message=packet['message'],
-                response=message['response']
-            )
-            
             
 
-        await self.send(text_data=json.dumps({
-            "message": message['response'],
-            "IsImage": IsImage,
-        }))
+            secn = self.userobj.last_chats[5:].find('User:')
+            self.userobj.last_chats = self.userobj.last_chats.replace(self.userobj.last_chats[0:5+secn], '')
+            self.userobj.last_chats += f"User: {packet['message']}\nAssistant: {message['response']}\n"
 
     async def disconnect(self, close_code):
         pass

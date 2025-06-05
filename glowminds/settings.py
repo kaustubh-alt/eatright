@@ -28,6 +28,7 @@ LOGIN_URL = '/login'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'channels',
     'eatright',
     'corsheaders',
@@ -74,7 +75,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'glowminds.wsgi.application'
+#WSGI_APPLICATION = 'glowminds.wsgi.application'
 
 ASGI_APPLICATION = 'glowminds.asgi.application'
 

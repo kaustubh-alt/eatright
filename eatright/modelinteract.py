@@ -4,7 +4,11 @@
 # from langchain_community.llms.ctransformers import CTransformers
 # from langchain.callbacks import StreamingStdOutCallbackHandler
 import re , json , requests
+from dotenv import load_dotenv
+import os
 import google.generativeai as genai
+
+load_dotenv()
 
 def getimg(q):
     url = 'https://www.googleapis.com/customsearch/v1'
@@ -12,12 +16,12 @@ def getimg(q):
     # Parameters for the request
     params = {
         'q': "dishes photo "+q,
-        'key': 'AIzaSyB7DMAC4yLekAqVArikYqinq5dO1yrk9wc',
-        'cx': '762d6316dc3f3489c',
-        'start': 2,
+        'key': os.getenv('GOOGLE_IMAGE_API_KEY'),  # Your Google API key
+        'cx': os.getenv('GOOGLE_IMAGE_CX_ID'),
+        'start': 3,
         'num': 1,
         'searchType': 'image',
-        'imgSize': 'MEDIUM',  # Options: 'icon', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'huge'
+        'imgSize': 'xlarge',  # Options: 'icon', 'small', 'medium', 'large', 'xlarge', 'xxlarge', 'huge'
         'imgType': 'photo',   # Get only photo results
         'safe': 'active'      # Safe search setting
     }
@@ -29,7 +33,7 @@ def getimg(q):
     if ab:
         for i in ab:
             # Try to get thumbnail URL first, if not available use original link
-            return i.get("image", {}).get("thumbnailLink") or i.get("link")
+            return  i.get("link")
         
 
 def plain_text_to_json(plain_text):
@@ -61,7 +65,7 @@ class lamba():
     def __init__(self):
         pass
 
-    def llama7b(self, bigqu):
+    def gemini(self, bigqu,chat):
         # llm = CTransformers(
         #     model="TheBloke/Llama-2-7B-Chat-GGML", 
         #     model_file = 'C:\Programs\eatright\llama-2-7b-chat.ggmlv3.q8_0.bin', 
@@ -71,22 +75,25 @@ class lamba():
 
         template = """
         [INST] <<SYS>>
+        Recent Chats : {chat}
+
         Your are food expert , and you everything about human consumption and food.
         Your name is Eatright AI and you help people to solve their food related queries.
         you have recommend a dish if user ask for it and not for every query, 
         if you feel user is may need a dish then only recommend it, give the dish name at last of response in square bracket.
         you know everything about food and you are very good at it.
         if user ask anything beyond food then say "Its beyond my scope".
-        You max limit is 50 tokens.
-        input : {prompt}[/INST]
+
+
+        Input : {prompt}[/INST]
         """
 
         # prompt = PromptTemplate(template=template, input_variables=["prompt"])
 
         # pipeline = RunnableSequence(prompt, llm)
 
-        genai.configure(api_key='AIzaSyBoC4PdP_nNb3Vf6y3khN30h7IK3jdQ5iU')
-        prompt = template.format(prompt=bigqu)
+        genai.configure(api_key=os.getenv('GEMINI_API_KEY'))  # Set your Google API key
+        prompt = template.format(chat=chat , prompt=bigqu)
         model = genai.GenerativeModel('gemini-1.5-flash')  # Adjust model as needed
         response = model.generate_content(prompt)
         
@@ -106,6 +113,71 @@ class lamba():
             'recommendation': getimg(recommendation) if recommendation else None,
         }
 
+
+    def gemma(self,bigqu: str, chat_history=""):
+
+
+        try:
+            reqUrl = "http://localhost:8585/chat"
+            headersList = {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+
+            # Prepare payload with escaped newlines
+            payload = {
+                "prompt": bigqu,
+                "chat_history": chat_history ,
+            }
+
+            # Make request
+            response = requests.post(
+                reqUrl,
+                json=payload,
+                headers=headersList
+            )
+            
+            # Check for successful response
+            response.raise_for_status()
+            result = response.json()
+
+
+            return {
+                'response': result.get('response', ''),
+                'recommendation': getimg(result.get('suggestion')) if result.get('suggestion') else None,
+                'status': 'success'
+            }
+
+        except requests.RequestException as e:
+            print(e)
+            return {
+                'response': f"API Error: {str(e)}",
+                'recommendation': None,
+                'image_url': None,
+                'status': 'error'
+            }
+        except Exception as e:
+            return {
+                'response': f"Processing Error: {str(e)}",
+                'recommendation': None,
+                'image_url': None,
+                'status': 'error'
+            }
+
+    # Example usage
+    if __name__ == "__main__":
+        # Test the function
+        question = "What should I eat for breakfast?"
+        previous_chat = [
+            {
+                "user": "I want to eat healthy",
+                "response": "Focus on protein-rich foods [Oatmeal]",
+                "image": "http://example.com/oatmeal.jpg"
+            }
+        ]
+        
+        result = gemma(question, previous_chat)
+        print(json.dumps(result, indent=2))
 #for testing purpose
 # obj = lamba()
 # print(obj.llama7b("cheese burgers"))
