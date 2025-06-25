@@ -15,22 +15,6 @@ import csv
 
 gendar = {"male":1,"female":2,"non-binary":3,}
 
-def load_seo_keywords(file_path):
-    with open(file_path, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        # Extract categories (header row)
-        categories = next(reader)
-        # Create a dictionary with categories as keys and a list of keywords as values
-        seo_data = {category: [] for category in categories}
-        
-        # Populate the dictionary with keywords
-        for row in reader:
-            for idx, keyword in enumerate(row):
-                if keyword.strip():  # Ensure non-empty keywords
-                    seo_data[categories[idx]].append(keyword.strip())
-    return seo_data
-
-seo_data = load_seo_keywords("C:/Programs/intaste/glowminds/eatright/seo.csv") 
 
 
 # The dashboard code is for login and signup
@@ -205,7 +189,7 @@ def output(request):
 
 
     context = {
-        'primary': seo_data.values(),
+
         'meta_title': 'EatRight - Discover More',
         'meta_description': 'Welcome to our homepage. Find the best deals and information.',
         'key': key, 
