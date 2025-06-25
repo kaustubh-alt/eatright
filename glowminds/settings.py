@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -92,19 +92,17 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'time_series',
-        'USER': 'root',
-        'PASSWORD': '',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': '7410',
         'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': 'SET innodb_strict_mode=1',
-            'sql_mode': 'STRICT_TRANS_TABLES'
-        }
+        'PORT': '5432',
+        
     }
-    }
+}
+
+DATABASES['default'] = dj_database_url.config(default="postgresql://postgres:qBfhUzugSRGsUpYJJbLgiQpvyLkCuTLC@nozomi.proxy.rlwy.net:11524/railway",ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

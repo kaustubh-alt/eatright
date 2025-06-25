@@ -11,6 +11,12 @@ from .models import userchat, userdb
 from django.contrib.auth.models import User
 from asgiref.sync import sync_to_async
 import uuid
+from channels.db import database_sync_to_async
+import logging
+import asyncio
+
+
+logger = logging.getLogger(__name__)
 
 image_storage_path = settings.MEDIA_URL + 'uploads/'
 fs = FileSystemStorage(location=image_storage_path)
@@ -24,13 +30,17 @@ class Modulus:
 
     @classmethod
     async def create(cls, username):
-        # print(username)
-        user_instance = await sync_to_async(userdb.objects.get)(user=username)
-        return cls(user_instance)
+
+        user_instance = await database_sync_to_async(userdb.objects.get)(user=username)
+
+        obj =  cls(user_instance)
+        obj.last_chats = await obj.get_last_messages()
+        return obj
     
 
 
     async def save_user_chat(self, timestamp, message=None, response=None, genimage=None, userimage=None):
+        
         await sync_to_async(userchat.objects.create)(
             userid=self.user,
             user=message,
@@ -49,6 +59,7 @@ class Modulus:
             .order_by('-time')
             .values('user', 'response', 'userimage', 'genimage', 'time')
         )
+
         # Convert datetime to timestamp for JSON serialization
         return [{
             'user_message': msg['user'],
@@ -67,13 +78,11 @@ def process_llama_request(input_data,chats):
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        await self.accept()        
+
         # Fetch user object asynchronously and attach to scope
-        self.userobj = await Modulus.create(self.scope['user'])
-        await self.accept()
+        self.userobj = await Modulus.create(self.scope['user'])  
 
-        self.userobj.last_chats = await self.userobj.get_last_messages()
-
-        #print(self.userobj.last_chats)
         # Send welcome message and chat history
         await self.send(text_data=json.dumps({
             "type": "connection_established",
@@ -82,7 +91,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
         chat_context = ""
-       # print(chat_history[0:10])
+    
         if self.userobj.last_chats:
             for msg in list(reversed(self.userobj.last_chats[0:10])):
                 chat_context += f"User: {msg.get('user_message', '')}\n"
@@ -90,8 +99,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Clean the chat context string
         chat_context = chat_context.replace('\n', '\\n').replace('\r', '').replace('None', 'null')
-
         self.userobj.last_chats = chat_context
+
+        
 
     async def receive(self, text_data):
         packet = json.loads(text_data)
@@ -100,7 +110,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             word_count = len(packet['message'].split())
             if word_count > 50:
                 await self.send(text_data=json.dumps({
-                    "message": "Please limit your message to 50 words or less.",
+                    "message": "Please limit your message to 50 chars or less.",
                     "IsImage": False,
                     "isError": True
                 }))
@@ -116,15 +126,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 filename = f"image_{int(time.time())}_{uuid.uuid4().hex[:8]}.png"
                 file_path = fs.save(filename, BytesIO(image_data))
-                # print(file_path)
+               
 
                 message = f"Image uploaded: {file_path}"
-                #IsImage = True
+                
 
-                await self.userobj.save_user_chat(
+                asyncio.create_task(
+                    await self.userobj.save_user_chat(
                     timestamp=time.time(),
                     userimage=file_path
-                )
+                ))
+
+                await self.send(text_data=json.dumps({
+                    "message": message,
+                    "IsImage": False,
+                }))
 
 
 
@@ -136,24 +152,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(process_llama_request, packet['message'], self.userobj.last_chats)
                 message = future.result()
-                #print("msg is ",message)
+                
 
-            await self.userobj.save_user_chat(
-                timestamp=time.time(),
-                message=packet['message'],
-                response=message['response']
-            )
-  
 
             await self.send(text_data=json.dumps({
                 "message": message['response'],
                 "IsImage": IsImage,
             }))
 
-            if message['recommendation']:
-                await self.userobj.save_user_chat(
+
+            asyncio.create_task(
+                
+                self.userobj.save_user_chat(
                     timestamp=time.time(),
-                    genimage=message['recommendation']
+                    message=packet['message'],
+                    response=message['response']
+                )
+            )
+  
+            if message['recommendation']:
+                asyncio.create_task(
+                    self.userobj.save_user_chat(
+                        timestamp=time.time(),
+                        genimage=message['recommendation']
+                    )
                 )
 
                 await self.send(text_data=json.dumps({
@@ -162,10 +184,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
 
             
-
-            secn = self.userobj.last_chats[5:].find('User:')
-            self.userobj.last_chats = self.userobj.last_chats.replace(self.userobj.last_chats[0:5+secn], '')
-            self.userobj.last_chats += f"User: {packet['message']}\nAssistant: {message['response']}\n"
+            if self.userobj.last_chats is not None:
+                secn = self.userobj.last_chats[5:].find('User:')
+                self.userobj.last_chats = self.userobj.last_chats.replace(self.userobj.last_chats[0:5+secn], '')
+                self.userobj.last_chats += f"User: {packet['message']}\nAssistant: {message['response']}\n"
 
     async def disconnect(self, close_code):
         pass
