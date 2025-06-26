@@ -1,30 +1,29 @@
 FROM python:3.11-slim
 
-# Disable pyc files and enable unbuffered stdout
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Environment
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Set working dir
 WORKDIR /app
 
-# Install build dependencies (if you have psycopg2 or similar)
-RUN apt-get update && \
-    apt-get install -y build-essential libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies (if psycopg2, etc)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Copy app files
+# Copy app code
 COPY . .
 
-# Collect static files (optional if you have static)
+# Collect static files (if you use them)
 RUN python manage.py collectstatic --noinput
 
-# Expose port
 EXPOSE 8000
 
-# Start with Daphne (or Uvicorn)
+# Start app with Daphne (or Uvicorn)
 CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "your_project_name.asgi:application"]
