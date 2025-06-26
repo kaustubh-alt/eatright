@@ -1,8 +1,10 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -102,7 +104,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.config(default="postgresql://postgres:qBfhUzugSRGsUpYJJbLgiQpvyLkCuTLC@nozomi.proxy.rlwy.net:11524/railway",ssl_require=True)
+DATABASES['default'] = dj_database_url.config(default=os.getenv('DATABASE_URL'),ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
