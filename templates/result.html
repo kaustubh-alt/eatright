@@ -2,176 +2,696 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>EatRight - Your Food Tech Companion</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Google Fonts for modern look -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EatRight - FoodTech AI Chatbot</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap"
       rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <!-- Font Awesome for icons -->
     <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap"
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
     <style>
       body {
+        font-family: "Quicksand", Arial, sans-serif;
+        background: linear-gradient(135deg, #fffbe7 0%, #ffe066 100%);
+        color: #3a2c0a;
         margin: 0;
-        font-family: "Montserrat", Arial, sans-serif;
-        background: #fffbe6;
-        color: #333;
+        padding: 0;
+        transition: background 0.4s, color 0.4s;
       }
-      .header {
-        background: linear-gradient(90deg, #ffe066 0%, #ffd60a 100%);
-        padding: 2rem 0 1rem 0;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(255, 214, 10, 0.1);
+
+      .dark-mode {
+        background: linear-gradient(135deg, #232323 0%, #3a2c0a 100%);
+        color: #ffe066;
       }
-      .header h1 {
-        font-size: 3rem;
-        margin: 0;
-        color: #634c03;
-        letter-spacing: 2px;
+
+      .dark-mode .navbar,
+      .dark-mode .features,
+      .dark-mode .chat-demo,
+      .dark-mode .hero,
+      .dark-mode .coming-soon-section {
+        background: #232323 !important;
       }
-      .header p {
-        font-size: 1.3rem;
-        color: #856404;
-        margin-top: 0.5rem;
+
+      .dark-mode .feature-visual,
+      .dark-mode .chat-placeholder,
+      .dark-mode .coming-soon-section li,
+      .dark-mode .how-list li {
+        background: #2d2d2d !important;
+        color: #ffe066 !important;
       }
-      .features {
+
+      .dark-mode .feature-info h3,
+      .dark-mode .features h2,
+      .dark-mode .cta-primary,
+      .dark-mode .footer-content,
+      .dark-mode .footer-links a {
+        color: #ffe066 !important;
+      }
+
+      .dark-mode .cta-secondary {
+        background: #232323;
+        color: #ffe066;
+        border-color: #ffe066;
+      }
+
+      .dark-mode .cta-secondary:hover {
+        background: #ffe066;
+        color: #232323;
+      }
+
+      .dark-mode .feature-icon {
+        background: linear-gradient(135deg, #ffe066 60%, #ffb300 100%);
+        color: #232323;
+        border-color: #232323;
+      }
+
+      .dark-mode footer {
+        background: #232323;
+        color: #ffe066;
+      }
+
+      .dark-mode .footer-links a:hover {
+        background: #ffe066;
+        color: #232323;
+      }
+
+      .navbar {
+        background: #fffbe7;
+        box-shadow: 0 2px 8px rgba(255, 224, 102, 0.1);
+        padding: 1rem 0;
+        border-radius: 0 0 2rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+      }
+
+      .logo {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #ffb300;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        letter-spacing: 1px;
+      }
+
+      .nav-links a {
+        color: #3a2c0a;
+        text-decoration: none;
+        margin-left: 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border-radius: 1rem;
+        padding: 0.3rem 1rem;
+        transition: color 0.2s, background 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: #fff;
+        background: #ffb300;
+      }
+
+      .dark-mode-toggle {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #ffb300;
+        margin-left: 1.5rem;
+        cursor: pointer;
+        border-radius: 50%;
+        padding: 0.4rem 0.6rem;
+        transition: background 0.2s;
+      }
+
+      .dark-mode-toggle:hover {
+        background: #ffe066;
+      }
+
+      .hero {
         display: flex;
         flex-wrap: wrap;
+        align-items: center;
         justify-content: center;
-        gap: 2rem;
-        margin: 3rem 0;
+        padding: 4rem 2rem 2rem 2rem;
+        background: linear-gradient(120deg, #fffbe7 60%, #ffe066 100%);
       }
-      .feature-card {
-        background: #fffde7;
-        border-radius: 18px;
-        box-shadow: 0 4px 24px rgba(255, 214, 10, 0.12);
-        padding: 2rem 1.5rem;
-        width: 320px;
-        max-width: 90vw;
+
+      .hero-content {
+        flex: 1 1 350px;
+        max-width: 500px;
+      }
+
+      .hero-content h1 {
+        font-size: 3.2rem;
+        color: #ffb300;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .subtitle {
+        font-size: 1.4rem;
+        color: #3a2c0a;
+        margin-bottom: 2rem;
+        font-weight: 500;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .cta-primary {
+        background: linear-gradient(90deg, #ffb300 60%, #ffd600 100%);
+        color: #fff;
+        padding: 1rem 2.2rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 16px rgba(255, 176, 0, 0.15);
+        transition: background 0.2s, color 0.2s;
+        display: inline-block;
+      }
+
+      .cta-primary:hover {
+        background: #ffd54f;
+        color: #3a2c0a;
+      }
+
+      .cta-secondary {
+        background: #fff;
+        color: #ffb300;
+        padding: 1rem 2.2rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        text-decoration: none;
+        border: 2px solid #ffb300;
+        font-size: 1.1rem;
+        transition: background 0.2s, color 0.2s;
+        display: inline-block;
+      }
+
+      .cta-secondary:hover {
+        background: #ffb300;
+        color: #fff;
+      }
+
+      .hero-image {
+        flex: 1 1 350px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 500px;
+        margin-top: 2rem;
+      }
+
+      .hero-image img {
+        width: 100%;
+        max-width: 350px;
+        border-radius: 2rem;
+        box-shadow: 0 8px 32px rgba(255, 176, 0, 0.15);
+      }
+
+      .features {
+        background: #fff;
+        padding: 4rem 2rem 2rem 2rem;
         text-align: center;
-        transition: transform 0.2s;
       }
-      .feature-card:hover {
-        transform: translateY(-8px) scale(1.03);
-        box-shadow: 0 8px 32px rgba(255, 214, 10, 0.18);
+
+      .features h2 {
+        color: #ffb300;
+        font-size: 2.4rem;
+        margin-bottom: 2.5rem;
+        font-weight: 700;
+        letter-spacing: 1px;
       }
-      .feature-card i {
+
+      .features-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .feature-visual {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(90deg, #fffbe7 60%, #ffe066 100%);
+        border-radius: 2.5rem;
+        box-shadow: 0 4px 24px rgba(255, 224, 102, 0.13);
+        padding: 2.5rem 2rem;
+        margin: 0 0.5rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        min-height: 180px;
+        position: relative;
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      .feature-visual.visible {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .feature-visual:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 8px 32px rgba(255, 176, 0, 0.18);
+      }
+
+      .feature-icon {
+        flex-shrink: 0;
+        width: 110px;
+        height: 110px;
+        background: linear-gradient(135deg, #ffb300 60%, #ffd600 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #fff;
+        margin-right: 2rem;
+        box-shadow: 0 2px 12px rgba(255, 176, 0, 0.13);
+        border: 4px solid #fff;
+      }
+
+      .feature-info {
+        text-align: left;
+        flex: 1;
+      }
+
+      .feature-info h3 {
+        color: #ffb300;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 0.7rem;
+        letter-spacing: 0.5px;
+      }
+
+      .feature-info p {
+        color: #3a2c0a;
+        font-size: 1.15rem;
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.7;
+      }
+
+      .coming-soon-feature {
+        opacity: 0.85;
+        filter: grayscale(0.1);
+      }
+
+      .coming-soon {
+        font-size: 1rem;
+        color: #fff;
+        background: #ffb300;
+        border-radius: 0.7rem;
+        padding: 0.2rem 0.8rem;
+        margin-left: 0.5rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .how-it-works {
+        background: #ffe066;
+        padding: 3rem 2rem;
+        text-align: center;
+      }
+
+      .how-it-works h2 {
+        color: #3a2c0a;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+      }
+
+      .how-list {
+        list-style: decimal inside;
+        max-width: 600px;
+        margin: 0 auto;
+        color: #3a2c0a;
+        font-size: 1.1rem;
+        padding-left: 0;
+        font-weight: 500;
+      }
+
+      .how-list li {
+        margin-bottom: 1rem;
+        border-radius: 1rem;
+        background: #fffbe7;
+        padding: 0.7rem 1.2rem;
+        margin-top: 0.5rem;
+      }
+
+      .chat-demo {
+        background: #fff;
+        padding: 3rem 2rem;
+        text-align: center;
+      }
+
+      .chat-demo h2 {
+        color: #ffb300;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+      }
+
+      .chat-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fffbe7;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        max-width: 400px;
+        margin: 0 auto;
+        box-shadow: 0 2px 12px rgba(255, 224, 102, 0.12);
+      }
+
+      .chat-placeholder i {
         font-size: 2.5rem;
-        color: #ffd60a;
+        color: #ffb300;
         margin-bottom: 1rem;
       }
-      .feature-card h3 {
-        margin: 0.5rem 0 0.7rem 0;
-        color: #634c03;
-        font-size: 1.4rem;
-      }
-      .feature-card p {
-        color: #856404;
-        font-size: 1rem;
-      }
-      .coming-soon {
-        background: #fff3cd;
-        color: #b8860b;
-        border-radius: 8px;
-        padding: 0.3rem 0.7rem;
-        font-size: 0.95rem;
-        margin-left: 0.5rem;
-      }
-      .cta {
+
+      .coming-soon-section {
+        background: #fffbe7;
+        padding: 3rem 2rem;
         text-align: center;
-        margin: 3rem 0 2rem 0;
       }
-      .cta-btn {
-        background: linear-gradient(90deg, #ffd60a 0%, #ffe066 100%);
-        color: #634c03;
-        font-weight: bold;
-        font-size: 1.2rem;
-        border: none;
-        border-radius: 30px;
-        padding: 1rem 2.5rem;
-        box-shadow: 0 2px 8px rgba(255, 214, 10, 0.13);
-        cursor: pointer;
-        transition: background 0.2s, transform 0.2s;
+
+      .coming-soon-section h2 {
+        color: #3a2c0a;
+        font-size: 2rem;
+        margin-bottom: 1.2rem;
+        font-weight: 700;
       }
-      .cta-btn:hover {
-        background: linear-gradient(90deg, #ffe066 0%, #ffd60a 100%);
-        transform: scale(1.04);
+
+      .coming-soon-section ul {
+        list-style: none;
+        padding: 0;
+        color: #3a2c0a;
+        font-size: 1.1rem;
+        font-weight: 500;
       }
+
+      .coming-soon-section li {
+        margin-bottom: 0.7rem;
+        border-radius: 1rem;
+        background: #fff;
+        padding: 0.7rem 1.2rem;
+        margin-top: 0.5rem;
+      }
+
+      footer {
+        background: #ffb300;
+        color: #fff;
+        padding: 2rem 0 1rem 0;
+        text-align: center;
+        border-radius: 2rem 2rem 0 0;
+      }
+
+      .footer-content {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .footer-links a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 1rem;
+        font-weight: 600;
+        transition: text-decoration 0.2s;
+        font-size: 1.1rem;
+        border-radius: 1rem;
+        padding: 0.2rem 0.7rem;
+      }
+
+      .footer-links a:hover {
+        text-decoration: underline;
+        background: #ffd600;
+        color: #3a2c0a;
+      }
+
       @media (max-width: 900px) {
-        .features {
+        .hero {
           flex-direction: column;
-          align-items: center;
+          padding: 2rem 1rem;
+        }
+
+        .hero-content,
+        .hero-image {
+          max-width: 100%;
+        }
+
+        .features-list {
+          gap: 1.5rem;
+        }
+
+        .feature-visual {
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+          padding: 2rem 1rem;
+        }
+
+        .feature-icon {
+          margin-right: 0;
+          margin-bottom: 1.2rem;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .nav-content {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 0 1rem;
+        }
+
+        .features-list {
+          gap: 1rem;
+        }
+
+        .feature-visual {
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+          padding: 1.2rem 0.5rem;
+        }
+
+        .feature-icon {
+          width: 80px;
+          height: 80px;
+          font-size: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .footer-content {
+          padding: 0 1rem;
         }
       }
     </style>
   </head>
+
   <body>
-    <div class="header">
-      <h1><i class="fa-solid fa-utensils"></i> EatRight</h1>
-      <p>Your Food Tech Companion – Ask, Discover, Enjoy!</p>
-    </div>
-    <div class="features">
-      <div class="feature-card">
-        <i class="fa-solid fa-comments"></i>
-        <h3>Ask Food Queries</h3>
-        <p>
-          Have a question about food, nutrition, or cooking? Get instant answers
-          from our smart assistant.
-        </p>
+    <nav class="navbar">
+      <div class="nav-content">
+        <a href="#" class="logo"><i class="fas fa-utensils"></i> EatRight</a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#how">How It Works</a>
+          <a href="#coming-soon">Coming Soon</a>
+        </div>
+        <button
+          id="darkModeToggle"
+          class="dark-mode-toggle"
+          aria-label="Toggle dark mode"
+        >
+          <i class="fas fa-moon"></i>
+        </button>
       </div>
-      <div class="feature-card">
-        <i class="fa-solid fa-lightbulb"></i>
-        <h3>Solve Doubts</h3>
-        <p>
-          Confused about ingredients, diets, or meal plans? We help clear your
-          doubts with expert-backed info.
-        </p>
+    </nav>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>EatRight</h1>
+        <p class="subtitle">Your FoodTech AI Chatbot for Smarter Eating</p>
+        <div class="cta-buttons">
+          <a
+            href="https://eatright.up.railway.app"
+            class="cta-primary"
+            target="_blank"
+            rel="noopener"
+            >Open EatRight</a
+          >
+          <a href="#features" class="cta-secondary">Learn More</a>
+        </div>
       </div>
-      <div class="feature-card">
-        <i class="fa-solid fa-bowl-food"></i>
-        <h3>Ask for Recipes</h3>
-        <p>
-          Craving something new? Ask for recipes tailored to your taste, diet,
-          and available ingredients.
-        </p>
+      <div class="hero-image">
+        <img
+          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80"
+          alt="EatRight Food AI"
+        />
       </div>
-      <div class="feature-card">
-        <i class="fa-solid fa-star"></i>
-        <h3>Dish Recommendations</h3>
-        <p>
-          Not sure what to eat? Get personalized dish recommendations for any
-          occasion or mood.
-        </p>
+    </section>
+    <section id="features" class="features">
+      <h2>Features</h2>
+      <div class="features-list">
+        <div class="feature-visual">
+          <div class="feature-icon"><i class="fas fa-comments"></i></div>
+          <div class="feature-info">
+            <h3>Chatbot: Ask Food Queries</h3>
+            <p>
+              Our AI-powered chatbot is ready to answer your food and nutrition
+              questions instantly. Whether you want to know about healthy
+              eating, food safety, or ingredient swaps, just ask!
+            </p>
+          </div>
+        </div>
+        <div class="feature-visual">
+          <div class="feature-icon"><i class="fas fa-question-circle"></i></div>
+          <div class="feature-info">
+            <h3>Solve Doubts</h3>
+            <p>
+              Confused about diets, allergies, or food labels? Get clear,
+              reliable answers to all your food-related doubts from EatRight's
+              friendly AI assistant.
+            </p>
+          </div>
+        </div>
+        <div class="feature-visual">
+          <div class="feature-icon"><i class="fas fa-utensil-spoon"></i></div>
+          <div class="feature-info">
+            <h3>Recipe & Dish Recommendations</h3>
+            <p>
+              Discover delicious recipes and get personalized dish suggestions
+              based on your preferences, dietary needs, and available
+              ingredients.
+            </p>
+          </div>
+        </div>
+        <div class="feature-visual coming-soon-feature">
+          <div class="feature-icon"><i class="fas fa-search-location"></i></div>
+          <div class="feature-info">
+            <h3>
+              Find This Dish Online
+              <span class="coming-soon">(Coming Soon)</span>
+            </h3>
+            <p>
+              Soon, you'll be able to search for your favorite dishes and find
+              where to order them online, right from EatRight!
+            </p>
+          </div>
+        </div>
+        <div class="feature-visual coming-soon-feature">
+          <div class="feature-icon"><i class="fas fa-tags"></i></div>
+          <div class="feature-info">
+            <h3>
+              Discounts & Coupons <span class="coming-soon">(Coming Soon)</span>
+            </h3>
+            <p>
+              Get ready for exclusive discounts and coupons for online food
+              delivery, coming soon to EatRight!
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="feature-card">
-        <i class="fa-solid fa-location-dot"></i>
-        <h3>Find Dishes Online <span class="coming-soon">Coming Soon</span></h3>
-        <p>
-          Discover where to order your favorite dishes online, right from the
-          app.
-        </p>
+    </section>
+    <section id="how" class="how-it-works">
+      <h2>How It Works</h2>
+      <ol class="how-list">
+        <li>Type your food-related question or request.</li>
+        <li>Get instant, AI-powered answers and recommendations.</li>
+        <li>Explore recipes, tips, and more!</li>
+      </ol>
+    </section>
+    <section id="chat" class="chat-demo">
+      <h2>Open EatRight Now</h2>
+      <div class="chat-placeholder">
+        <i class="fas fa-robot"></i>
+        <a
+          href="https://eatright.up.railway.app"
+          class="cta-primary"
+          target="_blank"
+          rel="noopener"
+          >Open EatRight</a
+        >
+        <p>Experience the AI chatbot live!</p>
       </div>
-      <div class="feature-card">
-        <i class="fa-solid fa-tags"></i>
-        <h3>
-          Discounts & Coupons <span class="coming-soon">Coming Soon</span>
-        </h3>
-        <p>
-          Unlock exclusive discounts and coupons for online food delivery
-          partners.
-        </p>
+    </section>
+    <section id="coming-soon" class="coming-soon-section">
+      <h2>More Features Coming Soon</h2>
+      <ul>
+        <li>Find dishes online and order directly</li>
+        <li>Exclusive discounts and coupons</li>
+        <li>Personalized meal planning</li>
+      </ul>
+    </section>
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2024 EatRight. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Use</a>
+        </div>
       </div>
-    </div>
-    <div class="cta">
-      <a href="/"
-        ><button class="cta-btn">
-          <i class="fa-solid fa-rocket"></i> Start Exploring EatRight
-        </button></a
-      >
-    </div>
+    </footer>
+    <script>
+      // Dark mode toggle
+      const darkToggle = document.getElementById("darkModeToggle");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      if (prefersDark) document.body.classList.add("dark-mode");
+      darkToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        const icon = darkToggle.querySelector("i");
+        icon.classList.toggle("fa-moon");
+        icon.classList.toggle("fa-sun");
+      });
+
+      // Scroll animation for features
+      function revealOnScroll() {
+        const reveals = document.querySelectorAll(".feature-visual");
+        const windowHeight = window.innerHeight;
+        reveals.forEach((el, i) => {
+          const top = el.getBoundingClientRect().top;
+          if (top < windowHeight - 60) {
+            setTimeout(() => el.classList.add("visible"), i * 120);
+          }
+        });
+      }
+      window.addEventListener("scroll", revealOnScroll);
+      window.addEventListener("DOMContentLoaded", () => {
+        revealOnScroll();
+        // Animate hero on load
+        document.querySelector(".hero").style.opacity = 0;
+        setTimeout(() => {
+          document.querySelector(".hero").style.transition =
+            "opacity 1s cubic-bezier(.4,0,.2,1)";
+          document.querySelector(".hero").style.opacity = 1;
+        }, 100);
+      });
+    </script>
   </body>
 </html>
