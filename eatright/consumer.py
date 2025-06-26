@@ -78,10 +78,24 @@ def process_llama_request(input_data,chats):
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.accept()        
+
+        # User is not authenticated
+        if not self.scope['user'].is_authenticated:
+            await self.close()
+            return
+    
+                
+        await self.accept()
 
         # Fetch user object asynchronously and attach to scope
         self.userobj = await Modulus.create(self.scope['user'])  
+
+        #close websocket if user is not in DB
+        if not self.userobj:
+            await self.close()
+            return
+
+        
 
         # Send welcome message and chat history
         await self.send(text_data=json.dumps({
@@ -190,4 +204,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.userobj.last_chats += f"User: {packet['message']}\nAssistant: {message['response']}\n"
 
     async def disconnect(self, close_code):
-        pass
+        del self.userobj
+        
