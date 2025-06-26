@@ -19,10 +19,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
+    'eatright.up.railway.app',
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "hhtps://localhost:8000",
+    "https://localhost:8000",
+    "https://eatright.up.railway.app",
 ]
 
 LOGIN_URL = '/login'
