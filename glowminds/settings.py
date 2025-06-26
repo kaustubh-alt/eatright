@@ -15,12 +15,20 @@ load_dotenv()
 SECRET_KEY = 'django-insecure-r@7n2e%701#%jje-eb!=m44+ugbkr&vq)m33i)3l25kig0qs))'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.getenv('PRODUCTION') == "True":
+    DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
     'eatright.up.railway.app',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://eatright.up.railway.app",
+]
+
 
 CORS_ALLOWED_ORIGINS = [
     "https://localhost:8000",
