@@ -116,6 +116,9 @@ def likes(request,fav):
     
     return render(request,"recent-like.html",context)
 
+def landing(request):
+    return render(request,"result.html",)
+
 @api_view(["POST"])
 def likedish(request):
     usr = request.user

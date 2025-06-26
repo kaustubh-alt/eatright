@@ -27,5 +27,6 @@ urlpatterns = [
     path("api/csrf/",CSRFTokenView.as_view(),name="csrf_token"),
     path('login',views.dashboard,name='login'),
     path('logout-user',logoutuser,name="logout"), 
+    path('landingpage',views.landing,name='landing'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
