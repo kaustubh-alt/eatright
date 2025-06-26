@@ -1,0 +1,32 @@
+# Use official Python slim image
+FROM python:3.11-slim
+
+# Environment settings
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies needed for mysqlclient + general builds
+RUN apt-get update && apt-get install -y \Add commentMore actions
+    build-essential \
+    default-libmysqlclient-dev \
+    pkg-config \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python packages
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+
+# Optional: collect static files (uncomment if needed)
+# RUN python manage.py collectstatic --noinput
+
+# Expose port Railway or other platforms will map
+EXPOSE 8000
+
+# Start app using Daphne for ASGI + WebSocket support
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "glowminds.asgi:application"]
